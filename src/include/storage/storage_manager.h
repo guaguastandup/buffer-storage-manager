@@ -2,12 +2,12 @@
 #include <string>
 #include <fstream>
 
-using namespace std;
-
 class DSMgr { // disk storage manager
 public:
        DSMgr();
-       int OpenFile(string filename);
+       DSMgr::DSMgr(std::string filename = "./data.dbf");
+
+       int OpenFile(std::string filename);
        int CloseFile();
 
        bFrame ReadPage(int page_id);
@@ -21,10 +21,14 @@ public:
 
        void SetUse(int index, int use_bit);
        int GetUse(int index);
-private:
-       std::fstream dbIO;
-	FILE *currFile;
 
+       void IncIO();
+private:
+       // std::fstream fileIO;
+	FILE *currFile;
+       
 	int numPages;
-	int pages[MAXPAGES];
+
+       long long io_total;
+       
 };
