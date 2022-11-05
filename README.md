@@ -17,3 +17,9 @@ Lab1：根据下面的设计要求，实现一个Storage and Buffer Manager。
 （1) 实现CLOCK、LRU-2、LIRS等其它缓存置换算法（至少一种），并与LRU算法的性能进行对比；
 （2） 加入缓存请求时的并发控制，通过内存锁(latch)解决缓存访问时的冲突；要求通过多线程方式执行trace并给出测试结果．
 
+
+
+
+run command
+g++ test_main.cpp storage_manager.cpp buffer_manager.cpp  lru_replacer.cpp -o a && ./a
+

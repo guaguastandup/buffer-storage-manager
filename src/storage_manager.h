@@ -1,11 +1,14 @@
-#include "include/storage/storage.h"
+#ifndef STORAGE_MANAGER
+#define STORAGE_MANAGER
+#include "storage.h"
 #include <string>
 #include <fstream>
 
 class DSMgr { // disk storage manager
 public:
        DSMgr();
-       DSMgr::DSMgr(std::string filename = "./data.dbf");
+       DSMgr(std::string filename = "./data.dbf");
+       ~DSMgr();
 
        int OpenFile(std::string filename);
        int CloseFile();
@@ -15,7 +18,7 @@ public:
 
        int Seek(int offset, int pos);
        FILE * GetFile();
-       
+
        void IncNumPages();
        int GetNumPages();
 
@@ -23,12 +26,15 @@ public:
        int GetUse(int index);
 
        void IncIO();
+       int GetIOCnt() { return io_total; }
 private:
        // std::fstream fileIO;
 	FILE *currFile;
-       
-	int numPages;
+	int numPages = 0;
+       long long io_total = 0;
+       std::unordered_map<int, int> page_usebit;
 
-       long long io_total;
        
 };
+
+#endif

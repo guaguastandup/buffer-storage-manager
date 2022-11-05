@@ -1,12 +1,13 @@
-#include "include/buffer/lru_replacer.h"
+#include "lru_replacer.h"
+#include <iostream>
 
-LRUReplacer::LRUReplacer(size_t num_pages) {
+LRUReplacer::LRUReplacer(size_t buf_size) {
     head = new Node(-1);
     tail = new Node(-1);
     // tail = head;
     head->nxt = tail;
     tail->pre = head;
-    capacity = num_pages;
+    capacity = buf_size;
     size = 0;
 }
 
@@ -18,16 +19,12 @@ LRUReplacer::~LRUReplacer() {
     delete tail;
 }
 
-void LRUReplacer::Update(int frame_id) {
-    
-}
-
 bool LRUReplacer::Victim(int *frame_id) {
     if(Size() == 0) { // no victim page, still got free buffer
-        *frame_id = 0;
+        *frame_id = -1;
         return false;
     }
-    Node *node = tail->pre; //  选择队尾元素
+    Node *node = tail->pre; // 选择队尾元素 pop_back
     *frame_id = node->val;
     remove(node->val);
     return true;
@@ -38,18 +35,20 @@ void LRUReplacer::Pin(int frame_id) { // write frame to disk
         remove(frame_id);
     }
 }
-void LRUReplacer::Unpin(int frame_id) {
-    if(fton[frame_id] == nullptr) {
-        if(Size() >= capacity) {
-            while(Size() >= capacity) {
-                Node *node = tail->pre;
-                remove(node->val); // this is not in the queue, so the BCB will be deleted
-            }
-        }
-        Node *node = new Node(frame_id);
-        insert(node);
-    } else {
 
+void LRUReplacer::Unpin(int frame_id) {
+    if(Size() >= capacity) {
+        std::cout<< "victim start"<<std::endl;
+        while(Size() >= capacity) {
+            Node *node = tail->pre;
+            // the deleted node is the victim
+            std::cout<< "victim: "<<node->val<<std::endl;
+            remove(node->val); // this is not in the queue, so the BCB will be deleted
+        }
+         std::cout<< "victim end\n"<<std::endl;
+    }
+    if(fton[frame_id] != nullptr) {
+        remove(frame_id);
     }
     Node *node = new Node(frame_id);
     insert(node);
